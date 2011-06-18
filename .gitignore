@@ -1,0 +1,5 @@
+.bundle
+config/*.yml
+log/*.log
+tmp/*.lock
+vendor/
