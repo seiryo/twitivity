@@ -174,7 +174,7 @@ module Twitivity
       if 0 == count
         `wget  -q http://yats-data.com/data/users_maxid.sql.bz2`
         `bzip2 -d users_maxid.sql.bz2`
-        `mysql -u#{@db_username} -p#{@db_password} -h#{@db_host} #{@db_schema} < users_maxid.sql`
+        `mysql -u#{@db_user} -p#{@db_password} -h#{@db_host} #{@db_schema} < users_maxid.sql`
         `rm -f users_maxid.sql`
       end
       activist_ids = []
