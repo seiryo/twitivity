@@ -1,8 +1,22 @@
+- if @user
+  == slim :_profile
+
 - @activities.each do |activity|
-  - user = @users_hash[activity.user_id]
-  p #{user.screen_name}
-  ul
-    li
-      img src="#{user.profile_image_url}"
-    li #{activity.before}
-    li #{activity.after}
+  - next unless user = @users_hash[activity.user_id]
+  - next unless division = User.acquire_devision(activity.division)
+  h2
+    |@
+    a href="http://twitter.com/#{user.screen_name}" #{user.screen_name}
+    ' changed #{division.to_s}
+  a href="/#{user.screen_name}"
+    img src="#{user.profile_image_url}"
+  dl
+    - if :profile_image_url == division
+      dt before
+      dd
+        img src="#{activity.before}"
+    - else
+      dt after
+      dd #{activity.after}
+      dt before
+      dd #{activity.before}

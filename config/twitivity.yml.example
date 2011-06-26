@@ -1,0 +1,15 @@
+oauth:
+  consumer_key:        ""
+  consumer_secret:     ""
+  access_token:        ""
+  access_token_secret: ""
+
+crawler:
+  limit:
+    connection:   4
+    lookup_users: 100
+    preserve_api: 150
+
+application:
+  cookie_secret: ""
+  page_limit:    20

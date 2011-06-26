@@ -38,9 +38,9 @@ module Twitivity
         config['oauth']['access_token_secret']
       )
 
-      @lookup_users_limit = config['limit']['lookup_users']
-      @connection_limit   = config['limit']['connection']
-      @preserve_api_limit = config['limit']['preserve_api']
+      @lookup_users_limit = config['crawler']['limit']['lookup_users']
+      @connection_limit   = config['crawler']['limit']['connection']
+      @preserve_api_limit = config['crawler']['limit']['preserve_api']
       @user_hash          = {}
       @activist_set       = []
     end
@@ -57,19 +57,26 @@ module Twitivity
       EventMachine.run do
         @activist_set.each do |user_ids|
           options = {
-            :head => {"Content-Type" => "application/x-www-form-urlencoded"},
+            :head => {'Content-Type' => 'application/x-www-form-urlencoded'},
             :body => {'user_id' => user_ids.join(','), 'skip_status' => 1}
           }
           http = EventMachine::HttpRequest.new(LOOKUP_URL).post(options) do |client|
             @consumer.sign!(client, @access_token)
           end
           http.callback do
-            _lookup_user(http.response)
+            begin
+              _lookup_user(http.response)
+            rescue
+              @activist_set = []
+            end
             EventMachine.stop if _judge_stop(user_ids)
           end
           http.errback do
             EventMachine.stop if _judge_stop(user_ids)
           end
+        end
+        EventMachine.add_timer(10) do
+          EventMachine.stop if _judge_stop
         end
       end
     end
@@ -88,7 +95,7 @@ module Twitivity
       JSON.parse(response).each do |user_hash|
         #p user_hash
         next unless Hash == user_hash.class && user_hash.has_key?('id')
-        after_user  = _make_user_from_hash(user_hash)
+        after_user  = User.make_user_from_hash(user_hash)
         before_user = @user_hash[user_hash['id']]
         unless before_user
           #p after_user
@@ -146,8 +153,8 @@ module Twitivity
       user
     end
 
-    def _judge_stop(users)
-      @activist_set.delete_if { |a| a.object_id == users.object_id }
+    def _judge_stop(users = nil)
+      @activist_set.delete_if { |a| a.object_id == users.object_id } if users
       0 == @activist_set.size
     end
 

@@ -14,9 +14,9 @@ end
 
 File.open(LOCK_PATH, File::RDWR|File::CREAT, 0644) do |file|
   if file.flock(File::LOCK_EX|File::LOCK_NB)
-    db_config    = YAML.load_file(File.join(CONF_PATH, 'database.yml'))
-    crawl_config = YAML.load_file(File.join(CONF_PATH, 'crawler.yml'))
-    config       = db_config.merge(crawl_config)
+    db_config = YAML.load_file(File.join(CONF_PATH, 'database.yml'))
+    config    = YAML.load_file(File.join(CONF_PATH, 'twitivity.yml'))
+    config    = db_config.merge(config)
     Twitivity::Crawler.new(config, exec_env).start
     file.flock(File::LOCK_UN)
   end
