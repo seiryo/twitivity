@@ -2,6 +2,19 @@ require 'json'
 require 'oauth'
 class User < ActiveRecord::Base
 
+  def self.acquire_devision_text(devision)
+    text_hash = {
+      :screen_name       => 'id',
+      :name              => 'name',
+      :location          => 'location',
+      :description       => 'bio',
+      :profile_image_url => 'icon',
+      :url               => 'url',
+      :protected         => ''
+    }
+    text_hash[self.acquire_devision(devision)]
+  end
+
 
   def self.acquire_devision(devision)
     self.division_hash.each do |key, val|

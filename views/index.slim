@@ -1,22 +1,31 @@
-- if @user
-  == slim :_profile
-
 - @activities.each do |activity|
   - next unless user = @users_hash[activity.user_id]
   - next unless division = User.acquire_devision(activity.division)
-  h2
-    |@
-    a href="http://twitter.com/#{user.screen_name}" #{user.screen_name}
-    ' changed #{division.to_s}
-  a href="/#{user.screen_name}"
-    img src="#{user.profile_image_url}"
-  dl
-    - if :profile_image_url == division
-      dt before
-      dd
-        img src="#{activity.before}"
-    - else
-      dt after
-      dd #{activity.after}
-      dt before
-      dd #{activity.before}
+  div class="post"
+    div class="icon"
+      a href="/#{user.screen_name}"
+        img src="#{user.profile_image_url}"
+    h2 class="title"
+      |@
+      a href="/#{user.screen_name}" #{user.screen_name}
+      ' 
+      = "#{'changed'} "
+      em #{User.acquire_devision_text(activity.division)}
+    p class="meta"
+      a href="http://twitter.com/#{user.screen_name}"
+        img src="/images/twitter_mini.png" alt=""
+      ' 
+      = digest_datetime(activity.created_at)
+    div class="entry"
+      dl
+        - if :profile_image_url == division
+          dt Before
+          dd
+            img src="#{activity.before}"
+        - else
+          dt After
+          dd #{activity.after}
+          dt Before
+          dd #{activity.before}
+div id="cursor"
+  div id="more" class="more"

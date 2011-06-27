@@ -1,4 +1,55 @@
 html
+  head
+    meta http-equiv="content-type" content="text/html; charset=utf-8"
+    title Twitivity
+    meta name="keywords" content="twitivity,twitter"
+    meta name="description" content="TwitterのいろんなActivityをタイムラインで表示"
+    link href="/stylesheets/twitivity.css" rel="stylesheet" type="text/css" media="screen"
   body
-    h1 Twitivity
-    == yield
+    div id="logo"
+      h1
+        a href="/" Twitivity
+        p
+          em Activities of Twitter users.
+      hr
+    div id="header"
+      div id="menu"
+        ul
+      div id="search"
+        form method="get" action="/"
+          fieldset
+            input type="text" name="query" id="search-text" size="16" onfocus="if (this.value == 'Your Twitter ID') this.value = '';" onblur="if (this.value == '') this.value = 'Your Twitter ID';" value="Your Twitter ID"
+            input type="submit" id="search-submit" value="GO"
+    div id="page"
+      div id="content"
+        == yield
+      div id="sidebar"
+        - unless session[:screen_name]
+          ul
+            li
+              ul
+                li
+                  a href="/oauth/request" Login
+        - if session[:screen_name]
+          ul
+            li
+              a href="/#{session[:screen_name]}/timeline" Watch your timeline
+        - if @user
+          ul
+            li
+              == slim :_profile
+    div style="clear: both;"
+    div id="footer"
+      p
+        span kizakiko.biz
+        ' 
+        span
+          a href="http://www.twitter.com/seiryo" @seiryo
+        ' 
+        span seiryos@gmail.com
+        br
+        span
+          span Design by
+          ' 
+          a href="http://www.freecsstemplates.org/"
+            span Free CSS Templates

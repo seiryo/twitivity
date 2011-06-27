@@ -1,5 +1,31 @@
+- user = @user
+h2 "#{user.screen_name}"
 ul
-  li #{@user.id}
-  li #{@user.screen_name}
-  li #{@user.description}
-  li #{@user.url}
+  li
+    span
+      img alt="" src="#{user.profile_image_url}"
+  li
+    span
+      strong ID
+      ' 
+      span #{@user.screen_name}
+  li
+    span
+      strong Name
+      ' 
+      span #{@user.name}
+  li
+    span
+      strong Location
+      ' 
+      span #{@user.location}
+  li
+    span
+      strong URL
+      ' 
+      span #{@user.url}
+  li
+    span
+      strong Bio
+      ' 
+      span #{@user.description}

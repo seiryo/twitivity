@@ -44,6 +44,7 @@ module Twitivity
         user = User.acquire_user_info(@access_token)
         friend_ids = Friend.acquire_friend_ids(@access_token, user.id)
         Friend.replace(user.id, friend_ids)
+        session[:screen_name] = user.screen_name
       rescue => @exception
         return erb %{ failed: <%= @exception.message %> }
       end
@@ -52,7 +53,8 @@ module Twitivity
 
     get '/oauth/request' do
       oauth_consumer = OAuth::Consumer.new(@@consumer_key, @@consumer_secret, :site => "http://twitter.com")
-      request_token  = oauth_consumer.get_request_token()
+      request_token  = oauth_consumer.get_request_token(
+        :oauth_callback => "http://#{request.host}/oauth/callback")
       session[:request_token]        = request_token.token
       session[:request_token_secret] = request_token.secret
       redirect request_token.authorize_url
@@ -95,6 +97,26 @@ module Twitivity
       @users_hash[@user.id] = @user
       @activities = Activity.where('user_id = ?', @user.id).order('id desc').limit(@@limit).all
       slim :index
+    end
+
+    helpers do
+      def digest_datetime(created_at)
+        now = Time.now.gmtime
+        now = Time.gm(now.year, now.month, now.day, now.hour, now.min, now.sec)
+        days = (now - created_at).divmod(24*60*60)
+        hours = days[1].divmod(60*60)
+        mins = hours[1].divmod(60)
+        if     1 > days.first.to_i && 1 > hours.first.to_i && 1 > mins.first.to_i
+          before = "about before #{mins.last.to_i.to_s} seconds"
+        elsif  1 > days.first.to_i && 1 > hours.first.to_i
+          before = "about before #{mins.first.to_i.to_s} minutes"
+        elsif  1 > days.first.to_i
+          before = "about before #{hours.first.to_i.to_s} hours"
+        else
+          before = "about #{created_at.strftime("%Y-%m-%d %H:%M:%S")}"
+        end
+        before
+      end
     end
   end
 end
