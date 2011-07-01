@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <% url = "http://twitivity.kizakiko.biz" %>
+    <title>Twitivity <%= request.path_info %></title>
+    <link href="http://twitter.com/" rel="via" />
+    <link href="<%= url + request.path_info.gsub('/feed', '') %>" rel="alternate" />
+    <link href="<%= url + request.path_info %>" rel="self" />
+    <id><%= url + request.path_info.gsub('/feed', '') %></id>
+    <updated><%=  0 < @activities.size ? atom_updated(@activities.first.created_at) : atom_updated(@user.updated_at) %></updated>
+    <% for act in @activities %><% user = @users_hash[act.user_id] %><% devision = User.acquire_devision(act.division) %>
+    <entry>
+        <id><%= atom_id(act, user) %></id>
+        <title><%= "#{user.screen_name} changed #{User.acquire_devision_text(act.division)}" %></title>
+        <updated><%= atom_updated(act.created_at) %></updated>
+        <link href="http://twitter.com/<%= user.screen_name %>" rel="via" />
+        <link href="<%= url + atom_alt(act, user) %>" rel="alternate" />
+        <author><name>@<%= user.screen_name %></name></author>
+        <content type="xhtml">
+            <div xmlns="http://www.w3.org/1999/xhtml">
+                <table>
+                    <tr>
+                        <td><img alt="" src="<%= user.profile_image_url  %>" /></td>
+                        <% next if :protected == devision %>
+                        <% if :profile_image_url == devision %>
+                            <td><p><br /></p><p><em>Before:</em><img alt="" src="<%= act.before %>" %></p></td>
+                        <% else %> 
+                        <td><p><em>After:</em> <%= act.after %></p><p><em>Before:</em> <%= act.before %></p></td>
+                        <% end %>
+                    </tr>
+                </table>
+            </div>
+        </content>
+    </entry>
+    <% end %> 
+</feed>
+

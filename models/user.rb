@@ -55,7 +55,7 @@ class User < ActiveRecord::Base
     begin
       user_hash = JSON.parse(result.body)
       if (user_hash.has_key?('id') && 0 < user_hash['id'])
-        user = self.find(user_hash['id'])
+        user = self.find_by_id(user_hash['id'])
         unless user
           user = self.make_user_from_hash(user_hash)
           user.save

@@ -78,6 +78,9 @@ module Twitivity
         EventMachine.add_timer(10) do
           EventMachine.stop if _judge_stop
         end
+        EventMachine.add_timer(3600) do
+          EventMachine.stop
+        end
       end
     end
 

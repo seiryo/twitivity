@@ -1,9 +1,11 @@
 - user = @user
-h2 "#{user.screen_name}"
+h2
+  a href="/#{user.screen_name}"
+    = user.screen_name
 ul
   li
     span
-      img alt="" src="#{user.profile_image_url}"
+      img alt="" src="#{user.profile_image_url}" width="48" height="48"
   li
     span
       strong ID
